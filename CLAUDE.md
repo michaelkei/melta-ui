@@ -1,61 +1,24 @@
-# melta UI - AI向け指示
+@AGENTS.md
 
-> このDSは Claude Code でのヴァイブコーディングに最適化されている。UI生成時に必ずこのファイルから読み始めること。
+# melta UI - Claude Code 固有設定
 
-**読み込みモード**:
+> 共通のプロジェクト情報（設計原則・禁止パターン・テンプレート等）は AGENTS.md を参照。
+> このファイルには Claude Code 固有の読み込みモード・タスクガイド・クイックリファレンスを記載する。
+
+---
+
+## 読み込みモード
 
 | モード | 読むファイル | 用途 |
 |--------|------------|------|
-| クイック | CLAUDE.md のみ | 単体UIの生成（ボタン、カード等） |
+| クイック | CLAUDE.md + AGENTS.md | 単体UIの生成（ボタン、カード等） |
 | 標準 | + foundations/theme.md + 関連 component md | ページ単位の生成 |
 | MCP | MCP ツール（`get_token` / `get_component`）| AI ツール統合 |
 | フル | 全ファイル（下記の読み順に従う） | 新規プロジェクト構築・DS変更 |
 
 > クイックリファレンスだけで基本的なUIは生成可能。コンポーネント仕様が必要な場合のみ該当 md を追加で読み込む。
 
-**機械可読データ**: `tokens/tokens.json`（~106トークン）+ `metadata/components.json`（28コンポーネント）
-
-**フル読み順**: CLAUDE.md → foundations/design_philosophy.md → foundations/theme.md → foundations/ → components/ → patterns/ → foundations/prohibited.md（プロジェクト側に `foundations/theme.md` がある場合はそちらを優先）
-
----
-
-## 設計原則（5つ）
-
-1. **Layered** — Background → Surface → Text/Object の3層でUIを構成する
-2. **Contrast** — テキストは背景に対してWCAG 2.1準拠（4.5:1以上）
-3. **Semantic** — 色は用途で指定する（`bg-surface-primary` ≠ 生の `bg-white`）
-4. **Minimal** — 1つのViewに使う色は3色まで（背景・アクセント・テキスト）
-5. **Grid** — スペーシングは4の倍数を基本、8の倍数を推奨する
-
----
-
-## HTMLテンプレート
-
-> Tailwind CDN 使用時は以下を `<head>` に必ず含める。`primary-*` が未定義だとセマンティックカラーが機能しない。
-
-```html
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50:'#f0f5ff',100:'#dde8ff',200:'#c0d4ff',300:'#95b6ff',
-          400:'#6492ff',500:'#2b70ef',600:'#2250df',700:'#1a40b5',
-          800:'#13318d',900:'#0e266a',950:'#07194e'
-        },
-        wf: { bg:'#FFFFFF', surface:'#F5F5F5', border:'#E0E0E0', text:'#333333', 'text-sub':'#888888', accent:'#666666' }
-      },
-      fontFamily: {
-        sans: ['Inter','Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','sans-serif']
-      }
-    }
-  }
-}
-</script>
-<style>.text-body { color: #3d4b5f; }</style>
-```
+**フル読み順**: CLAUDE.md → AGENTS.md → foundations/design_philosophy.md → foundations/theme.md → foundations/ → components/ → patterns/ → foundations/prohibited.md（プロジェクト側に `foundations/theme.md` がある場合はそちらを優先）
 
 ---
 
@@ -76,7 +39,6 @@ tailwind.config = {
 本文               : text-base text-body leading-relaxed（18px, line-height 2.0）
 フォーム制御ラベル : 包含 <div> に leading-normal（body の lh 2.0 リセット）
 空状態メッセージ   : text-base text-slate-500 text-center py-16
-フォントスタック     : Inter, Hiragino Sans, Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif
 ```
 
 ### コンポーネント
@@ -92,10 +54,10 @@ Icon+Textボタン    : inline-flex items-center justify-center gap-2 h-10 pl-3 
 アイコンボタン（S）: w-8 h-8 inline-flex items-center justify-center cursor-pointer + aria-label（icon w-4 h-4）
 アイコンボタン（L）: w-12 h-12 inline-flex items-center justify-center cursor-pointer + aria-label（icon w-5 h-5）
 入力欄             : w-full px-3 py-2 text-base border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500/50 caret-primary-500
-セレクト           : appearance-none pl-3 pr-10 + relative wrapper + SVG chevron（absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4）← ネイティブ矢印は使用禁止
+セレクト           : appearance-none pl-3 pr-10 + relative wrapper + SVG chevron（absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4）-- ネイティブ矢印は使用禁止
 横並びフォーム     : flex flex-wrap items-end gap-4（外枠）+ 各 div.leading-normal > label + 要素 h-11 leading-normal（py-2 外す）+ ボタン h-11 inline-flex items-center（→ patterns/form.md 必読）
 バッジ（デフォルト）: bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium
-タグ（削除可能）   : inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium + ×ボタン
+タグ（削除可能）   : inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium + xボタン
 フィルターチップ   : inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm border cursor-pointer + aria-selected
 Alert（Info）      : flex items-start gap-3 p-4 bg-primary-50 border border-primary-200 text-primary-800 rounded-lg（border-l-4 禁止）
 Alert（Success）   : flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg（border-l-4 禁止）
@@ -119,9 +81,9 @@ Date Picker Day    : w-10 h-10 inline-flex items-center justify-center text-sm r
 
 ### アイコン
 ```
-Charcoal           : w-5 h-5 fill="currentColor" text-body ← assets/icons/{Name}.svg（プライマリ・207個）
-Lucide             : w-5 h-5 stroke="currentColor" fill="none" ← assets/icons/lucide/{name}.svg（補完・15個）
-小サイズ           : w-4 h-4 ← 同SVGをTailwindで縮小（Charcoal優先、Lucide補完）
+Charcoal           : w-5 h-5 fill="currentColor" text-body -- assets/icons/{Name}.svg（プライマリ・207個）
+Lucide             : w-5 h-5 stroke="currentColor" fill="none" -- assets/icons/lucide/{name}.svg（補完・15個）
+小サイズ           : w-4 h-4 -- 同SVGをTailwindで縮小（Charcoal優先、Lucide補完）
 アイコンボタン     : w-8/w-10/w-12 h-8/h-10/h-12（S/M/L）inline-flex items-center justify-center cursor-pointer + aria-label 必須
 ```
 
@@ -164,50 +126,11 @@ CSS変数            : --wf-bg / --wf-surface / --wf-border / --wf-text / --wf-t
 
 ---
 
-## 禁止パターン要約
-
-| 禁止 | 代替 |
-|------|------|
-| `text-black` | `text-slate-900` |
-| `bg-gray-300`以上の背景 | `bg-gray-50` 〜 `bg-gray-200` |
-| `rounded-none` on cards | `rounded-xl` |
-| `shadow-lg` / `shadow-2xl` | `shadow-sm` 〜 `shadow-md`（オーバーレイ: `shadow-xl`） |
-| `border-gray-100` | `border-slate-200` |
-| `text-gray-400` for body | `text-body` (#3d4b5f) |
-| `py-0.5` for buttons | `h-8` 以上（S: `h-8` / M: `h-10` / L: `h-12`） |
-| カード/Alert上部・左端のカラーバー（`border-t-4` / `border-l-4` / 色付き `div`） | `border border-*-200 rounded-lg` で全周ボーダー |
-| カード直下の `<fieldset>` + `<legend>` | `<div>` + `<h2>` でセクション見出し |
-| 日付セレクトの均等幅（`grid-cols-3`） | `flex` + 年 `w-28`、月・日 `w-20` |
-| 色だけで情報伝達 | アイコン/テキストを併用 |
-| `tracking-tight` | 見出し1%、本文2%を基本 |
-| プレースホルダーのみのラベル | 必ず `<label>` を使用 |
-| 派手なグラデーション / ネオンカラー / 過剰なアニメーション | セマンティックカラー、150〜300ms フィードバックに限定 |
-| フォーム制御ラベル包含divの `leading-normal` 省略 | 包含 `<div>` に `leading-normal` 付与 |
-| `bg-indigo-*` / `bg-blue-*` 等のハードコード | `primary-*` を使用（foundations/theme.md で定義） |
-| `<th>` の `scope` 省略 | `<th scope="col">` 必須 |
-| `<nav>` の `aria-label` 省略 | `aria-label="メインナビゲーション"` 必須 |
-
-> 全禁止パターン（76項目）+ AI生成パターンの排除: `foundations/prohibited.md` 参照
-
----
-
-## Foundation / コンポーネント一覧
-
-**Foundations (10)**: color, spacing, typography, elevation, radius, motion, z-index, icons, accessibility, emotional-feedback — 各 `foundations/{name}.md`
-
-**Components (28)**: button, card, checkbox, modal, sidebar, textfield, select, dropdown, radio, toggle, toast, list, badge, tag, table, tooltip, tabs, breadcrumb, pagination, avatar, progress, alert, accordion, skeleton, datepicker, divider, stepper, copy-button — 各 `components/{name}.md`
-
-**Skills (1)**: design-review — `skills/design-review/SKILL.md`（DSチェック・違反検出・修正提案）
-
-**Patterns (5)**: layout, form, navigation, interaction-states, responsive — 各 `patterns/{name}.md`
-
----
-
 ## タスクベース読み込みガイド
 
 | タスク | 読み込むファイル（順序） |
 |--------|------------------------|
-| 単体コンポーネント生成 | CLAUDE.md のみ |
+| 単体コンポーネント生成 | CLAUDE.md + AGENTS.md のみ |
 | ページ生成 | + foundations/theme.md → patterns/layout.md → 関連 component md |
 | ダークモード対応 | + foundations/theme.md（CSS変数）→ foundations/color.md（Dark列） |
 | フォーム画面 | + patterns/form.md → textfield / select / checkbox / button |
@@ -230,62 +153,12 @@ CSS変数            : --wf-bg / --wf-surface / --wf-border / --wf-text / --wf-t
 
 ---
 
-## テーマ・カラー変数・ダークモード
+## Foundation / コンポーネント / スキル一覧
 
-> テーマ設定・CSS変数定義・ダークモード切替: `foundations/theme.md` を参照。
+**Foundations (10)**: color, spacing, typography, elevation, radius, motion, z-index, icons, accessibility, emotional-feedback -- 各 `foundations/{name}.md`
 
-<!-- ダークモードを有効にするには OFF → ON に変更してください -->
-| 設定 | 値 |
-|------|-----|
-| **ダークモード** | `OFF` |
+**Components (28)**: button, card, checkbox, modal, sidebar, textfield, select, dropdown, radio, toggle, toast, list, badge, tag, table, tooltip, tabs, breadcrumb, pagination, avatar, progress, alert, accordion, skeleton, datepicker, divider, stepper, copy-button -- 各 `components/{name}.md`
 
-- `OFF`: ライトモードのみで設計・生成する（デフォルト）
-- `ON`: ダークモード対応を含めて設計・生成する（`foundations/theme.md` + `foundations/color.md` Dark列 を参照）
+**Skills (1)**: design-review -- `skills/design-review/SKILL.md`（DSチェック・違反検出・修正提案）
 
----
-
-## Design Context
-
-> このセクションは `/teach-impeccable` で自動生成される。フォーク後に再実行すると、あなたのプロジェクトに合わせた内容に上書きされる。
-
-### Users
-- **対象**: B2B / B2C 両方の汎用デザインシステム
-- **エンドユーザー**: 業務SaaSを使うビジネスパーソンから、ECサイト・予約サービスの一般消費者まで
-- **利用コンテキスト**: ダッシュボード、管理画面、EC、予約、学習、医療、行政など幅広いドメイン
-- **DSの消費者**: 人間の開発者・デザイナー、および Claude Code / Cursor 等の AI コード生成エージェント
-
-### Brand Personality
-- **3語で表すと**: 静謐・精緻・温もり（Quiet · Precise · Warm）
-- **声のトーン**: 「声を張らずに伝わる」— 主張しすぎない、でも確かに伝わる
-- **コアメタファー**: 「機能的な黒子であり、たまに微笑む」
-- **感情目標**: 心地よい集中 → 洗練された効率 → 穏やかな親しみ（この順で優先）
-
-### Aesthetic Direction
-- **ビジュアルトーン**: ミニマルだが冷たくない。フラットな基盤に Background → Surface → Text の3層で奥行きを出す
-- **参考プロダクト**: Linear / Notion（高速でミニマル、プロフェッショナルなSaaS）、Stripe / Vercel（洗練されたデベロッパー向けデザイン）
-- **アンチリファレンス**: 派手なグラデーション・ネオンカラーの SaaS 風デザイン、Bootstrap 的な没個性テンプレート
-- **テーマ**: 上部「テーマ・カラー変数・ダークモード」セクションの設定値に従う
-
-### Design Principles
-1. **Content First** — UIは黒子。コンテンツが主役であり、装飾ではなく構造で伝える
-2. **Calm Confidence** — 信頼感を静かに醸成する。過剰な演出より、正確なスペーシングとコントラストで品質を示す
-3. **Inclusive by Default** — WCAG 2.1 AA準拠はオプションではなくデフォルト。あらゆるユーザーが迷わず使える
-4. **Systematic Warmth** — 4px グリッド・セマンティックカラー・制限されたシャドウで一貫性を保ちつつ、Success 時の微細なアニメーションで人間味を添える
-5. **Machine-Readable** — トークン・メタデータ・セマンティック命名により、AIエージェントが正確にUIを生成できる
-
----
-
-## デプロイ
-
-| 項目 | 値 |
-|------|-----|
-| ホスティング | Netlify（手動デプロイ） |
-| 本番URL | https://melta.tsubotax.com |
-| publish ディレクトリ | `.`（リポジトリルート）— `netlify.toml` で設定済み |
-
-```bash
-# 本番デプロイ（--dir 指定不要。netlify.toml の publish = "." が使われる）
-netlify deploy --prod
-```
-
-> **注意**: `netlify deploy --prod --dir=docs` は NG。`publish = "."` なのでルートからデプロイしないとリダイレクトが 404 になる。
+**Patterns (5)**: layout, form, navigation, interaction-states, responsive -- 各 `patterns/{name}.md`
